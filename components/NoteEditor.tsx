@@ -78,7 +78,6 @@ export function NoteEditor({ noteId }: NoteEditorProps) {
         .eq("id", noteId)
         .select();
 
-      console.log(data);
       const parseResult = z.array(NoteSchema).safeParse(data);
       if (!parseResult.success || error) {
         throw new Error("Invalid data from database");
