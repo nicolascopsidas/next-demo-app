@@ -48,7 +48,7 @@ export function NoteEditor({ noteId }: NoteEditorProps) {
         .select("*")
         .eq("id", noteId)
         .single();
-      const parseResult = UpdateNoteSchema.safeParse(data);
+      const parseResult = NoteSchema.safeParse(data);
       if (!parseResult.success || error) {
         throw new Error("Invalid data from database");
       }
@@ -77,6 +77,8 @@ export function NoteEditor({ noteId }: NoteEditorProps) {
         .update(updatedFields)
         .eq("id", noteId)
         .select();
+
+      console.log(data);
       const parseResult = z.array(NoteSchema).safeParse(data);
       if (!parseResult.success || error) {
         throw new Error("Invalid data from database");

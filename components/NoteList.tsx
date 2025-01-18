@@ -27,13 +27,9 @@ export function NoteList({ selectedNoteId, onSelectNote }: NoteListProps) {
         .from("notes")
         .select("*")
         .order("updated_at", { ascending: false });
-      console.log(data);
       const parseResult = z.array(NoteSchema).safeParse(data);
-      if (!parseResult.success) {
+      if (!parseResult.success || error) {
         throw new Error("Invalid data from database");
-      }
-      if (error) {
-        throw new Error(error.message);
       }
       return data || [];
     },
@@ -58,8 +54,9 @@ export function NoteList({ selectedNoteId, onSelectNote }: NoteListProps) {
         .from("notes")
         .insert([fields])
         .select();
-      if (error) {
-        throw new Error(error.message);
+      const parseResult = z.array(NoteSchema).safeParse(data);
+      if (!parseResult.success || error) {
+        throw new Error("Invalid data from database");
       }
       return data;
     },
