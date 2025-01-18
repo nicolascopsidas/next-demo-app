@@ -1,10 +1,10 @@
 import { forgotPasswordAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
+import type { Message } from "@/components/form-message";
+import { FormMessage } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { SmtpMessage } from "../smtp-message";
 
 export default async function ForgotPassword(props: {
   searchParams: Promise<Message>;
@@ -12,13 +12,13 @@ export default async function ForgotPassword(props: {
   const searchParams = await props.searchParams;
   return (
     <>
-      <form className="flex-1 flex flex-col w-full gap-2 text-foreground [&>input]:mb-6 min-w-64 max-w-64 mx-auto">
+      <form className=" w-6/12 flex flex-col border border-gray-300 rounded-lg p-6">
         <div>
-          <h1 className="text-2xl font-medium">Reset Password</h1>
+          <h1 className="text-2xl font-medium">Mot de passe oublé</h1>
           <p className="text-sm text-secondary-foreground">
-            Already have an account?{" "}
+            Vous avez déjà un compte?{" "}
             <Link className="text-primary underline" href="/sign-in">
-              Sign in
+              Connectez-vous
             </Link>
           </p>
         </div>
@@ -26,12 +26,11 @@ export default async function ForgotPassword(props: {
           <Label htmlFor="email">Email</Label>
           <Input name="email" placeholder="you@example.com" required />
           <SubmitButton formAction={forgotPasswordAction}>
-            Reset Password
+            Reinitialiser le mot de passe
           </SubmitButton>
           <FormMessage message={searchParams} />
         </div>
       </form>
-      <SmtpMessage />
     </>
   );
 }
