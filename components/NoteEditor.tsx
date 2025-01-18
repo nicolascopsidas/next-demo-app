@@ -9,13 +9,13 @@ import { useDebouncedCallback } from "use-debounce";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface NoteEditorProps {
-  noteId: string;
+  noteId: number;
 }
 
 export function NoteEditor({ noteId }: NoteEditorProps) {
   const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState<string | null>("");
 
   const {
     data: note,
@@ -30,8 +30,9 @@ export function NoteEditor({ noteId }: NoteEditorProps) {
         .select("*")
         .eq("id", noteId)
         .single();
-      if (error) {
-        throw new Error(error.message);
+      const parseResult = UpdateNoteSchema.safeParse(data);
+      if (!parseResult.success) {
+        throw new Error("Invalid data from database");
       }
       return data;
     },
@@ -50,12 +51,19 @@ export function NoteEditor({ noteId }: NoteEditorProps) {
       const {
         data: { user },
       } = await supabase.auth.getUser();
+
+      const updatedFields = {
+        ...updatedNote,
+        updated_at: new Date().toISOString(),
+        user_id: user?.id,
+      };
+      const result = UpdateNoteSchema.safeParse(updatedFields);
+      if (!result.success) {
+        throw new Error(result.error.message);
+      }
       const { data, error } = await supabase
         .from("notes")
-        .update({
-          ...updatedNote,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updatedFields)
         .eq("id", noteId)
         .select();
       if (error) {
@@ -70,7 +78,11 @@ export function NoteEditor({ noteId }: NoteEditorProps) {
   });
 
   const debouncedUpdate = useDebouncedCallback(
-    (updatedFields: Partial<Note>) => {
+    () => {
+      const updatedFields = {
+        title,
+        content,
+      };
       const result = UpdateNoteSchema.safeParse(updatedFields);
       if (result.success) {
         updateNoteMutation.mutate(result.data);
@@ -95,18 +107,18 @@ export function NoteEditor({ noteId }: NoteEditorProps) {
         value={title}
         onChange={(e) => {
           setTitle(e.target.value);
-          debouncedUpdate({ title: e.target.value });
+          debouncedUpdate();
         }}
-        placeholder="Note Title"
+        placeholder="Titre de votre note"
         className="text-2xl font-bold"
       />
       <Textarea
-        value={content}
+        value={content ?? ""}
         onChange={(e) => {
           setContent(e.target.value);
-          debouncedUpdate({ content: e.target.value });
+          debouncedUpdate();
         }}
-        placeholder="Write your note here..."
+        placeholder="Écrivez votre note ici..."
         className="min-h-[calc(100vh-250px)]"
       />
     </div>

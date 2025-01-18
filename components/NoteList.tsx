@@ -2,13 +2,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Trash2, PlusCircle } from "lucide-react";
-import type { Note } from "../schemas";
+import { CreateNoteSchema, NoteSchema, type Note } from "../schemas";
 import { createClient } from "@/utils/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { z } from "zod";
 
 interface NoteListProps {
-  selectedNoteId: string | null;
-  onSelectNote: (id: string | null) => void;
+  selectedNoteId: number | null;
+  onSelectNote: (id: number | null) => void;
 }
 
 export function NoteList({ selectedNoteId, onSelectNote }: NoteListProps) {
@@ -27,6 +28,10 @@ export function NoteList({ selectedNoteId, onSelectNote }: NoteListProps) {
         .select("*")
         .order("updated_at", { ascending: false });
       console.log(data);
+      const parseResult = z.array(NoteSchema).safeParse(data);
+      if (!parseResult.success) {
+        throw new Error("Invalid data from database");
+      }
       if (error) {
         throw new Error(error.message);
       }
@@ -40,9 +45,18 @@ export function NoteList({ selectedNoteId, onSelectNote }: NoteListProps) {
       const {
         data: { user },
       } = await supabase.auth.getUser();
+      const fields = {
+        title: "New Note",
+        content: "",
+        user_id: user?.id,
+      };
+      const result = CreateNoteSchema.safeParse(fields);
+      if (!result.success) {
+        throw new Error(result.error.message);
+      }
       const { data, error } = await supabase
         .from("notes")
-        .insert([{ title: "New Note", content: "", user_id: user?.id }])
+        .insert([fields])
         .select();
       if (error) {
         throw new Error(error.message);
@@ -56,7 +70,7 @@ export function NoteList({ selectedNoteId, onSelectNote }: NoteListProps) {
   });
 
   const deleteNoteMutation = useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (id: number) => {
       const supabase = createClient();
       await supabase.from("notes").delete().eq("id", id);
     },
@@ -93,9 +107,11 @@ export function NoteList({ selectedNoteId, onSelectNote }: NoteListProps) {
               <div>
                 <h3 className="font-semibold">{note.title}</h3>
                 <p className="text-sm text-gray-500 line-clamp-2">
-                  {note.content.length > 20
-                    ? `${note.content.slice(0, 20)}...`
-                    : note.content}
+                  {note.content
+                    ? note.content.length > 20
+                      ? `${note.content.slice(0, 20)}...`
+                      : note.content
+                    : ""}
                 </p>
               </div>
               <Button

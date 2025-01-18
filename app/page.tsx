@@ -16,7 +16,7 @@ export default function Page() {
 }
 
 function NotesApp() {
-  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+  const [selectedNoteId, setSelectedNoteId] = useState<number | null>(null);
 
   return (
     <div className="flex h-full overflow-hidden">

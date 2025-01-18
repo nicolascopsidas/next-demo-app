@@ -1,12 +1,12 @@
 import { z } from "zod";
 
 export const NoteSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   title: z.string().min(1, "Title is required"),
-  content: z.string(),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
-  user_id: z.string(),
+  content: z.string().nullable(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  user_id: z.string().uuid(),
 });
 
 export type Note = z.infer<typeof NoteSchema>;
