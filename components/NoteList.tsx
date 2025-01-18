@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface NoteListProps {
   selectedNoteId: string | null;
-  onSelectNote: (id: string) => void;
+  onSelectNote: (id: string | null) => void;
 }
 
 export function NoteList({ selectedNoteId, onSelectNote }: NoteListProps) {
@@ -58,10 +58,14 @@ export function NoteList({ selectedNoteId, onSelectNote }: NoteListProps) {
   const deleteNoteMutation = useMutation({
     mutationFn: async (id: string) => {
       const supabase = createClient();
-      return supabase.from("notes").delete().eq("id", id);
+      await supabase.from("notes").delete().eq("id", id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
+
+      if (selectedNoteId) {
+        onSelectNote(null);
+      }
     },
   });
 
@@ -77,6 +81,7 @@ export function NoteList({ selectedNoteId, onSelectNote }: NoteListProps) {
       </div>
       <ScrollArea className="flex-grow">
         {notes?.map((note) => (
+          // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
           <div
             key={note.id}
             className={`flex flex-col p-4 cursor-pointer hover:bg-gray-100 ${

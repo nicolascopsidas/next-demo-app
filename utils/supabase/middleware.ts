@@ -13,7 +13,9 @@ export const updateSession = async (request: NextRequest) => {
     });
 
     const supabase = createServerClient(
+      // biome-ignore lint/style/noNonNullAssertion: <explanation>
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      // biome-ignore lint/style/noNonNullAssertion: <explanation>
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
@@ -21,12 +23,14 @@ export const updateSession = async (request: NextRequest) => {
             return request.cookies.getAll();
           },
           setAll(cookiesToSet) {
+            // biome-ignore lint/complexity/noForEach: <explanation>
             cookiesToSet.forEach(({ name, value }) =>
               request.cookies.set(name, value)
             );
             response = NextResponse.next({
               request,
             });
+            // biome-ignore lint/complexity/noForEach: <explanation>
             cookiesToSet.forEach(({ name, value, options }) =>
               response.cookies.set(name, value, options)
             );
@@ -38,9 +42,10 @@ export const updateSession = async (request: NextRequest) => {
     // This will refresh session if expired - required for Server Components
     // https://supabase.com/docs/guides/auth/server-side/nextjs
     const { data: user } = await supabase.auth.getUser();
+    console.log("user", user.user);
 
     // protected routes
-    if (request.nextUrl.pathname === "/" && !user) {
+    if (request.nextUrl.pathname === "/" && !user.user) {
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
 
@@ -48,7 +53,7 @@ export const updateSession = async (request: NextRequest) => {
       (request.nextUrl.pathname === "/sign-in" ||
         request.nextUrl.pathname === "/sign-up" ||
         request.nextUrl.pathname === "/forgot-password") &&
-      user
+      user.user
     ) {
       return NextResponse.redirect(new URL("/", request.url));
     }

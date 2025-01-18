@@ -81,7 +81,7 @@ export function NoteEditor({ noteId }: NoteEditorProps) {
     1000 // 1 second delay
   );
 
-  if (isLoading) return <Skeleton className="h-full w-full" />;
+  if (isLoading) return <div />;
   if (error) return <Skeleton className="h-full w-full" />;
   if (!note) return <div>Note not found</div>;
 
