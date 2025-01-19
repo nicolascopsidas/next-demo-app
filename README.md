@@ -15,7 +15,6 @@ A modern, efficient note-taking application built with cutting-edge technologies
 - Create, read, update, and delete notes
 - Real-time synchronization
 - Responsive design for desktop and mobile
-- Dark mode support
 
 ## Getting Started
 
