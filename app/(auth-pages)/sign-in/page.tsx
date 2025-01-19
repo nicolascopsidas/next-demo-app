@@ -8,8 +8,9 @@ import Link from "next/link";
 
 export default async function Login(props: { searchParams: Promise<Message> }) {
   const searchParams = await props.searchParams;
+
   return (
-    <form className=" w-6/12 flex flex-col border border-gray-300 rounded-lg p-6">
+    <form className="w-6/12 flex flex-col border border-gray-300 rounded-lg p-6">
       <h1 className="text-2xl font-medium">Connexion</h1>
       <p className="text-sm text-foreground">
         Vous n'avez pas encore de compte?{" "}
