@@ -31,7 +31,9 @@ function NotesApp() {
           <NoteEditor noteId={selectedNoteId} />
         ) : (
           <div className="flex items-center justify-center h-full">
-            <p className="text-gray-500">Select a note or create a new one</p>
+            <p className="text-gray-500">
+              Séléctionnez ou créez une nouvelle note
+            </p>
           </div>
         )}
       </div>

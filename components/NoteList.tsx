@@ -42,7 +42,7 @@ export function NoteList({ selectedNoteId, onSelectNote }: NoteListProps) {
         data: { user },
       } = await supabase.auth.getUser();
       const fields = {
-        title: "New Note",
+        title: "Nouvelle note",
         content: "",
         user_id: user?.id,
       };

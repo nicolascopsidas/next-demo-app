@@ -113,8 +113,8 @@ export function NoteEditor({ noteId }: NoteEditorProps) {
   return (
     <div className="space-y-4">
       <div className="text-sm text-gray-500 space-y-1">
-        <p>Created: {new Date(note.created_at).toLocaleString()}</p>
-        <p>Last Updated: {new Date(note.updated_at).toLocaleString()}</p>
+        <p>Créé : {new Date(note.created_at).toLocaleString()}</p>
+        <p>Mis à jour : {new Date(note.updated_at).toLocaleString()}</p>
       </div>
       <Input
         {...register("title")}
